@@ -149,6 +149,7 @@ CREATE TRIGGER TRIGGER_CHECK_DATE_PROJET_CREATE
   BEFORE INSERT ON PROJET
   FOR EACH ROW EXECUTE PROCEDURE CHECK_DATE_PROJET_CREATE();
 -------------------------------------------------------------------------------------------------------------------------------------
+BEGIN [TRANSACTION]; -- Début transaction
 SELECT [DISTINCT] * | colonne [, ...] FROM unetable [, ... ] WHERE condition GROUP BY expression HAVING condition ORDER BY expression [ ASC | DESC ] LIMIT nombre; -- Possibilité de mettre un alias pour colonne (avec le mot-clé AS) et un alias pour table
 -- colonne peut contenir COUNT(*), SUM(nb*prix), etc. HAVING condition peut contenir COUNT(id) > 5 par exemple.
 
@@ -157,12 +158,13 @@ INSERT INTO table [(colonne [, ...])] VALUES ({expression | DEFAULT} [, ...]) [R
 UPDATE table SET {colonne = {expression | DEFAULT}} [, ...] WHERE condition [RETURNING * | expression [[AS] nomdesortie] [, ...]];
 
 DELETE FROM table WHERE condition [RETURNING * | expression [[AS] nomdesortie] [, ...]];
+END; -- Fin transaction, COMMIT implicite
 \end{lstlisting}
 
 \newpage
 \code{PHP et PDO}{PHP}
 \begin{lstlisting}
-$dbh = new PDO("pgsql:host=domain.tld;port=5432;dbname=database", "username", "password"); // Remplacer domain.tld, database, username et password, port est facultatif
+$dbh = new PDO("pgsql:host=domain.tld;port=5432;dbname=database", "username", "password"); // Remplacer domain.tld, database, username et password, port est facultatif, déclenche une PDOException en cas d'erreur lors de la connexion
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 //-----------------------------------------------------------------------------------------------------------------------------------
 $res = $this->db->query("SELECT * from MATABLE"); // resultat de la requete contenu dans $res
