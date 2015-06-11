@@ -108,20 +108,26 @@
 \begin{itemize}
   \item Pas de type \lstinline{BOOLEAN}
   \item Pas de mode \lstinline{AUTOCOMMIT}, il faut utiliser le mot-clé \lstinline{COMMIT;}
+  \item \textbf{Importer un CSV sous SQL Developer} : clic droit sur le dossier tables à gauche dans SQL Developer et choisir "Import data"
 \end{itemize}
 
 \subsection*{SQL2}
 \code{PL/SQL}{SQL}
 \begin{lstlisting}
+SELECT table_name FROM dba_tables;
+SELECT table_name FROM all_tables; -- Même résultat
+SELECT table_name FROM user_tables; -- Que mes tables;
+SELECT * FROM ALL_OBJECTS WHERE OBJECT_TYPE IN ('FUNCTION','PROCEDURE','PACKAGE');
+
 DROP TABLE USER CASCADE CONSTRAINTS;
 CREATE TABLE USER ( 
-prenom varchar2(20), 
-nom varchar2(20), 
-specialite varchar2(20), 
-dateInscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-sexe char check (sexe in ('m','f')),
-constraint PK_MEMBRE primary key (prenom),
-constraint FK_MEMBRE_SPECIALITE foreign key (specialite) references SPECIALITE(intitule)
+  prenom varchar2(20), 
+  nom varchar2(20), 
+  specialite varchar2(20), 
+  dateInscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  sexe char check (sexe in ('m','f')),
+  constraint PK_MEMBRE primary key (prenom),
+  constraint FK_MEMBRE_SPECIALITE foreign key (specialite) references SPECIALITE(intitule)
 );
 
 create sequence numerotation_projet -- Voir la cheatsheet sur PostgreSQL pour plus d'info
@@ -180,6 +186,16 @@ BEGIN
   if (new_stock < 5) THEN
     INSERT INTO JOURNALISATION VALUES ('Attention : rupture de stock imminente',sysdate,:new.produit, NEW_STOCK);
   END IF;
+END;
+/
+----------------------------------------------Afficher le contenu de toutes les tables----------------------------------------------
+SET SERVEROUTPUT ON
+DECLARE
+BEGIN
+  FOR t IN (SELECT table_name FROM all_tables WHERE owner <> 'SYS' and data_type LIKE '%CHAR%') LOOP
+    dbms_output.put_line(SELECT * FROM t.table_name);
+  END LOOP;
+
 END;
 /
 \end{lstlisting}
