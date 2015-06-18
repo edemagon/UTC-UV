@@ -194,7 +194,7 @@ END; -- Fin transaction, COMMIT implicite
 $dbh = new PDO("pgsql:host=domain.tld;port=5432;dbname=database", "username", "password"); // Remplacer domain.tld, database, username et password, port est facultatif, déclenche une PDOException en cas d'erreur lors de la connexion
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 //-----------------------------------------------------------------------------------------------------------------------------------
-$res = $this->db->query("SELECT * from MATABLE"); // resultat de la requete contenu dans $res
+$res = $dbh->query("SELECT * from MATABLE"); // resultat de la requete contenu dans $res
 $rows = $res->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, CLASSE_PHP); // CLASSE_PHP est une classe PHP
 // fetchAll est à FETCH_BOTH par défaut (tableau indexé par nom des colonnes et numéro des colonnes, en commençant par 0)
 // $rows contient un tableau d'objet de la classe CLASSE_PHP

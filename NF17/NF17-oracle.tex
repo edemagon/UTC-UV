@@ -75,7 +75,7 @@
   }
 }
 
-\title{Cheatsheet template}
+\title{NF17 - Oracle}
 \author{Romain PELLERIN}
 \date\today
 
@@ -214,6 +214,9 @@ CREATE OR REPLACE TYPE Client AS OBJECT (
   sexe char
 );
 /
+--------------------------------------------------------------Héritage--------------------------------------------------------------
+CREATE TYPE sous-type UNDER sur_type ( déclarations ou surcharges );
+------------------------------------------------------------------------------------------------------------------------------------
 CREATE TABLE tClient OF Client (
   primary key (num),
   check (sexe in ('m', 'f'))
@@ -221,27 +224,33 @@ CREATE TABLE tClient OF Client (
 /
 CREATE OR REPLACE TYPE LigneFacture AS OBJECT (
   qte integer,
-  prod REF Produit -- Produit est un OBJECT
+  prod REF Produit, -- prod est un OID d'un objet Produit
+  prod2 Produit -- prod EST l'objet
 );
 /
+CREATE OR REPLACE TYPE RefLigneFacture AS OBJECT (
+  ligneFacture REF LigneFacture
+);
+/
+CREATE OR REPLACE TYPE ListeRefLigneFacture AS TABLE OF RefLigneFacture; -- Une table de REFERENCES vers des objets LigneFacture
 CREATE OR REPLACE TYPE ListeLigneFacture AS TABLE OF LigneFacture; -- Une table d'objets
 /
 CREATE OR REPLACE TYPE Facture AS OBJECT (
   num integer,
   date_etabli date,
   fk_client REF Client,
-  lignes ListeLigneFacture, -- Contient une collection de LigneFacture
+  ligness ListeLigneFacture, -- Contient une collection de LigneFacture
   member function total return integer, -- Déclaration d'une fonction, implémentée plus bas
   member function quantite return integer
 );
 /
 CREATE TABLE tFacture OF Facture (
   PRIMARY KEY (num),
-  SCOPE FOR (fk_client) is tClient -- tClient est le nom de l'OBJECT référencé par fk_client
+  SCOPE FOR (fk_client) is tClient -- tClient est le nom de la table que l'on vise
 )
 NESTED TABLE lignes STORE AS table_lignes; -- On pourra faire Facture.lignes.COLONNE
 
-CREATE OR REPLACE TYPE BODY Facture AS
+CREATE OR REPLACE TYPE BODY Facture IS
   MEMBER FUNCTION total RETURN integer
   IS
     vtotal integer;
@@ -280,5 +289,19 @@ VALUES (
 END;
 /
 \end{lstlisting}
+\section*{Niveau logique}
+\subsection*{Objet et référence d'objet}
+\textbf{Un OID ne peut pas être une FK, utiliser string par exemple}\\\\
+UN OBJET CONTIENT UN OBJET\\
+Type typBureau : <nom: string, numero: integer>\\
+Type typIntervenant : <nom: string, bureau: typBureau> -- Composition entre bureau et intervenant, CONTIENT L'OBJET. Il ne faudra pas créer de table pour Bureau
 
+UN OBJET REFERENCE UN OBJET\\
+Bureau de typBureau(\#nom) -- Table\\
+Type typIntervenant2 : <nom: string, bureau =>o Bureau> -- Bureau est une TABLE et non un TYPE, ici l'objet EST REFÉRENCÉ
+\subsection*{Tables imbriquées (collections)}
+Type RefBureau : <bureau =>o Bureau>\\
+Type ListRefBureau: collection de <RefBureau> -- Collection de références
+
+Type ListBureau: collection de <typBureau> -- Collection d'objets
 \end{document}
