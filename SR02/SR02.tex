@@ -105,13 +105,96 @@
 
 \section*{Sémaphores}
 
+\code{main.c}{c}
+\begin{lstlisting}
+int main() {
+
+  return 0;
+}
+\end{lstlisting}
+
 \section*{Interblocage de processus}
 
+Conditions nécessaires (simultanées) d'interblocage:
+\begin{itemize}
+\item Exclusion mutuelle
+\item Occupation et attente : Processus occupant au moins une ressource et qui attends d'acquérir des ressources supplémentaires détenues par d'autres processus
+\item Pas de réquisition : Les ressources déjà détenues ne peuvent être retirées de force à un processus
+\item Attente circulaire
+\end{itemize}
+
+\textbf{Si chaque type de ressource possède exactement un seul exemplaire alors: il y a situation d'interblocage SSI le graphe d'allocation possède un circuit}\\
+Cas des ressources possédant plusieurs exemplaires : Si le graphe d'allocation est sans circuit alors un processus n'est pas dans une situation d'interblocage (réciproque fausse)\\
+=> Interblocage s'il existe un sous-ensemble D (ensemble des sommets formant un cicuit) non vide de processus tel que, pour tout Pi appartenant à D, l'inégalité : DEMANDE[i] <= N - somme(ALLOCATION) avec N[i] nombre max de la ressource i est fausse
+
+Evitement des interblocages => Algorithme du banquier (évalue le risque d'interblocage pouvant être provoqué par une demande de ressource) :
+\begin{enumerate}
+  \item Vérifier la cohérence de la requête : DEMANDE <= BESOIN
+  \item Vérifier la disponibilité des ressources: DEMANDE <= DISPONIBILITE
+  \item Accepter temporairement la demande et vérifier l'état du système :\\
+DISPONIBLE = BESOIN[i] - DEMANDE\\
+ALLOCATION[i] = :old.ALLOCATION[i]+DEMANDE\\
+BESOIN[i] = :old.BESOIN[i]+DEMANDE
+  \item Appliquer l'algorithme de détermination d'un état sain: TRAVAIL = DISPONIBLE\\Pour tous les Pi, vérifier que BESOIN[i] <= TRAVAIL, si oui TRAVAIL += ALLOCATION[i], si non => système malsain
+\end{enumerate}
+
+Détection ds interblocages et reprise : Graphe d'attente si toutes les les ressources possèdent une seule instance (on élimine les noeuds de type ressource)\\
+\textbf{Interblocage SSI le graphe d'attente contient un circuit}
+
+
+ 
+
 \section*{Ordonnancement de processus}
+Critères d'ordonnancement:
+\begin{itemize}
+  \item Rendement d'utilisation du CPU : pourcentage de temps pendant lequel le CP est actif => Plus élevé, mieux c'est
+  \item Utilisation globale des ressources : assurer une occupation maximale des ressources de la machine et minimiser le temps d'attente pour l'allocation d'une ressource à un processeur
+  \item Equité : capacité de l'ordonnanceur (module du système d'exploitation qui attribue le contrôle du CPU à tour de rôle aux différents processus en compétition) à allouer le CPU d'une façon équitable à tous les processus de même priorité (éviter la  famine)
+  \item Temps de rotation : durée moyenne nécessaire pour qu'un processus termine son execution
+  \item Temps d'attente : durée moyenne qu'un processus passe à attendre le CPU
+  \item Temps de réponse : temps moyen qui s'écoule entre le moment oùun utilisateur soumet une requête et celui où il commence à recevoir les réponses
+  TMT = (somme(date de fin d'exécutionn - date d'arrivée du processus))/nombre de processus
+\end{itemize}
+
+Algorithmes d'ordonnancement:
+\begin{itemize}
+\item \textbf{FCFS} (First Come First Served) : Les tâches sont ordonnancées dans l'ordre où elles sont venues
+\item \textbf{SJF} (Shortest Job First) : Le CPU est attribué au processus dont le temps d'exéction estimé est minimal
+\item \textbf{SRT} (Shortest Time Remaining) : Le CPU est attribué au processus qui a le plus petit temps d'execution restant (réévaluation à chaque quantum)
+\item \textbf{RR} (Tourniquet) : Le controle du CPu est attribué a chaque processus pendant un quantum
+\end{itemize}
+
+Algorithmes avec priorité :  CPU attribué au processus de plus haute priorité
+
 
 \section*{Threads}
 
+2 types de retour possible (p. 132)
+
 \section*{Gestion de la mémoire}
+Partitions  multiplec contiguës:
+\begin{itemize}
+\item Contiguës fixes:
+\begin{itemize}
+\item files d'attente separées
+\item files d'attente communes
+\end{itemize}
+\item Contiguës dynamique:
+\begin{itemize}
+\item First fit (selon les adresses croissantes)
+\item Best fit (selon les tailles croissantes)
+\item Worst fit (selon les tailles décroissantes)
+\end{itemize}
+\item Contiguë siamoise
+\end{itemize}
+
+Algorithme de remplacement de pages:
+\begin{itemize}
+\item Algorithme optimal : Lors d'un défaut de page, choisit comme victime une page qui ne fera l'objet d'aucune référence ultérieure  ou qui fera l'objet de la référence la plus tardive
+\item FIFO : Choisit comme victime la page la plus anciennement chargée
+\item LRU  : Choisit comme victime la page ayant fait l'objet de la référence la plus ancienne
+\end{itemize}
+
 
 \section*{E/S}
 
