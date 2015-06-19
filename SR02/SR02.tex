@@ -171,6 +171,27 @@ Algorithmes avec priorité :  CPU attribué au processus de plus haute priorité
 
 2 types de retour possible (p. 132)
 
+\code{c}
+\begin{lstlisting}
+//Creation de Thread 
+int pthread_create(pthread_t *pthread , pthread_ath_- *ath , void *(*fonction)(*void), void *arg) 
+
+void *fonction(void * numero){
+  // Traitement de la thread
+}
+
+//Terminaison de Thread
+int pthread_exit(int *statut)
+{
+  return ((void *) & statut) ;
+}
+
+//Attente de la fin d'une thread
+int pthread_join(pthread_t tid , void *valeur) ;
+
+\end{lstlisting}
+
+
 \section*{Gestion de la mémoire}
 Partitions  multiplec contiguës:
 \begin{itemize}
